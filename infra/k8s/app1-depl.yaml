@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app1-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app1
+  template:
+    metadata:
+      labels:
+        app: app1
+    spec:
+      containers:
+        - name: app1
+          image: borgo99/app1
+          imagePullPolicy: Never
+          env:
+            - name: MONGO_URI
+              value: "mongodb://app1-mongo-srv:27017/app1"
+            - name: KKAFKA_BOOTSTRAP_SERVERS
+              value: "kafka:9092"
+            - name: KAFKA_TOPIC
+              value: "topic1"
+            - name: KAFKA_TEST_GROUP
+              value: "test-group"
+            - name: PORT
+              value: "8080"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app1-srv
+spec:
+  selector:
+    app: app1
+  ports:
+    - name: app1
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
